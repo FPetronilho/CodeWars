@@ -1,4 +1,4 @@
-package codewars.breakcamelcase;
+package codewars.kyu6.breakcamelcase;
 
 public class Main {
 

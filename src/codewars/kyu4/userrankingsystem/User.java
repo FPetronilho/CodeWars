@@ -1,4 +1,4 @@
-package codewars.userrankingsystem;
+package codewars.kyu4.userrankingsystem;
 
 public class User {
 

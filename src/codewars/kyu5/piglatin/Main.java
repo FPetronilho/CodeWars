@@ -1,4 +1,4 @@
-package codewars.piglatin;
+package codewars.kyu5.piglatin;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;

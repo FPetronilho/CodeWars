@@ -1,4 +1,4 @@
-package codewars.firstnonrepeatingletter;
+package codewars.kyu5.firstnonrepeatingletter;
 
 import java.util.HashMap;
 import java.util.Map;

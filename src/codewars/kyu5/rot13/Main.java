@@ -1,4 +1,4 @@
-package codewars.rot13;
+package codewars.kyu5.rot13;
 
 import java.util.stream.Collectors;
 

@@ -1,7 +1,4 @@
-package codewars.fundamentals.stringendswith;
-
-import java.util.Arrays;
-import java.util.stream.Collectors;
+package codewars.kyu7.stringendswith;
 
 public class Main {
 

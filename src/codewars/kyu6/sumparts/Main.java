@@ -1,4 +1,4 @@
-package codewars.sumparts;
+package codewars.kyu6.sumparts;
 
 import java.util.Arrays;
 

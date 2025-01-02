@@ -1,4 +1,4 @@
-package codewars.humanreadabletime;
+package codewars.kyu5.humanreadabletime;
 
 public class Main {
 

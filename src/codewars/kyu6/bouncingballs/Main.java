@@ -1,4 +1,4 @@
-package codewars.bouncingballs;
+package codewars.kyu6.bouncingballs;
 
 public class Main {
 

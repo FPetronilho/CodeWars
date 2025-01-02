@@ -1,4 +1,4 @@
-package codewars.fundamentals.smashtogether;
+package codewars.kyu8.smashtogether;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
