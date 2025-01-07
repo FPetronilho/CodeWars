@@ -22,10 +22,10 @@ public class Main {
     }
 
     public static int[][] getGeneration(int[][] cells, int generations) {
-        int rowCount = cells.length;
-        int colCount = cells[0].length;
-
         while (generations > 0) {
+            cells = expandGrid(cells);
+            int rowCount = cells.length;
+            int colCount = cells[0].length;
             int[][] nextGen = new int[rowCount][colCount];
 
             for (int row=0; row<rowCount; row++) {
@@ -89,7 +89,22 @@ public class Main {
     }
 
 
-    public static int[][] cropCells(int[][] cells) {
+    private static int[][] expandGrid(int[][] cells) {
+        int rowCount = cells.length;
+        int colCount = cells[0].length;
+        int[][] expanded = new int[rowCount + 2][colCount + 2];
+
+        for (int row=0; row<rowCount; row++) {
+            for (int col=0; col<colCount; col++) {
+                expanded[row+1][col+1] = cells[row][col];
+            }
+        }
+
+        return expanded;
+    }
+
+
+    private static int[][] cropCells(int[][] cells) {
         int top = MAX_VALUE;
         int bottom = MIN_VALUE;
         int left = MAX_VALUE;
