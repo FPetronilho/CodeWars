@@ -15,6 +15,11 @@ public class Main {
         // Get number of travels and set number of taxis that left to 0
         int numberOfTravels = distances.length;
 
+        // Check if speed is 0
+        if (speeds.length == 1 && speeds[0] == 0) {
+            return new int[] {0};
+        }
+
         // Sort the taxis speed array to descending so that they can leave in order on the first instance
         int[] sortedSpeeds = Arrays.stream(speeds)
                 .boxed()
@@ -44,6 +49,7 @@ public class Main {
                     numberOfTravelsPerSpeed.get(taxiReadyToGo).get(0)+1,
                     travelTime
             ));
+            currentTravelCounter++;
         }
 
         // Create result array and populate it in the same order of the given speeds
