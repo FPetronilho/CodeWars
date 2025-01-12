@@ -6,17 +6,19 @@ public class Main {
 
     public static void main(String[] args) {
         System.out.println(Arrays.toString(calculateTrips(
-                new int[]{40, 80, 40, 80},
-                new int[]{20, 40}
+                new int[]{ 100, 50, 80, 40, 40, 100, 50, 80, 40, 40, 100, 50, 80, 40, 40 },
+                new int[]{ 30, 20, 10 }
         )));
     }
+
+    // TODO: Taking account where travel time is float instead of int, i.e. 100km / 80km/h.
 
     public static int[] calculateTrips(int[] distances, int[] speeds) {
         // Get number of travels and set number of taxis that left to 0
         int numberOfTravels = distances.length;
 
         // Check if speed is 0
-        if (speeds.length == 1 && speeds[0] == 0) {
+        if ((speeds.length == 1 && speeds[0] == 0) || speeds.length == 0) {
             return new int[] {0};
         }
 
