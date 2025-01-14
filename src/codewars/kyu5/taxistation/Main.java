@@ -1,139 +1,113 @@
 package codewars.kyu5.taxistation;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Main {
 
     public static void main(String[] args) {
         System.out.println(Arrays.toString(calculateTrips(
-                new int[]{ 100, 50, 80, 40, 40, 100, 50, 80, 40, 40, 100, 50, 80, 40, 40 },
+                new int[]{ 100, 50, 80, 40, 40 },
                 new int[]{ 30, 20, 10 }
         )));
     }
 
-    // TODO: Taking account where travel time is float instead of int, i.e. 100km / 80km/h.
-
     public static int[] calculateTrips(int[] distances, int[] speeds) {
-        // Get number of travels and set number of taxis that left to 0
+        if (speeds == null || speeds.length == 0 || distances == null || distances.length == 0) {
+            return new int[] { 0 };
+        }
+
+        Map<Integer, Taxi> taxiMap = new HashMap<>();
+        for (int i=0; i<speeds.length; i++) {
+            Taxi taxi = new Taxi(speeds[i]);
+            taxiMap.put(i, taxi);
+        }
+
+        int currentTravelCounter = 0;
         int numberOfTravels = distances.length;
 
-        // Check if speed is 0
-        if ((speeds.length == 1 && speeds[0] == 0) || speeds.length == 0) {
-            return new int[] {0};
-        }
-
-        // Sort the taxis speed array to descending so that they can leave in order on the first instance
-        int[] sortedSpeeds = Arrays.stream(speeds)
-                .boxed()
-                .sorted(Comparator.reverseOrder())
-                .mapToInt(Integer::intValue)
-                .toArray();
-
-        // Create a map to track which taxis ("id" by speeds) have completed travels and how much time there is left
-        // until arrival back at garage
-        Map<Integer, List<Integer>> numberOfTravelsPerSpeed = populateTaxisAndFirstTravel(
-                sortedSpeeds,
-                distances,
-                numberOfTravels
-        );
-
-        // Check number of travels from departing taxis
-        int currentTravelCounter = 0;
-        for (Map.Entry<Integer, List<Integer>> entry: numberOfTravelsPerSpeed.entrySet()) {
-            currentTravelCounter += entry.getValue().get(0);
-        }
-
-        // Loop until all travels are finished
-        while (checkIfThereIsANextTravel(currentTravelCounter, numberOfTravels)) {
-            int taxiReadyToGo = checkWhichTaxiIsReadyToGo(numberOfTravelsPerSpeed);
-            int travelTime = calculateTravelTime(distances[currentTravelCounter-1], taxiReadyToGo);
-            numberOfTravelsPerSpeed.put(taxiReadyToGo, Arrays.asList(
-                    numberOfTravelsPerSpeed.get(taxiReadyToGo).get(0)+1,
-                    travelTime
-            ));
+        while (currentTravelCounter<numberOfTravels) {
+            Taxi taxiToGo = prioritizeTaxiToGo(taxiMap);
+            taxiToGo.setTrips(taxiToGo.getTrips()+1);
+            taxiToGo.setTimeUntilReady(distances[currentTravelCounter]*2);
             currentTravelCounter++;
         }
 
-        // Create result array and populate it in the same order of the given speeds
-        int[] travelsResult = new int[speeds.length];
-        for (int i=0; i<speeds.length; i++) {
-            travelsResult[i] = numberOfTravelsPerSpeed.get(speeds[i]).get(0);
+        int[] trips = new int[speeds.length];
+        for (int i=0; i<trips.length; i++) {
+            trips[i] = taxiMap.get(i).getTrips();
         }
 
-        return travelsResult;
+        return trips;
     }
 
-
-    private static int calculateTravelTime(int distance, int speed){
-        return distance / speed * 2;
-    }
-
-
-    private static boolean checkIfThereIsANextTravel(int counter, int numberOfTravels) {
-        return numberOfTravels > counter;
-    }
-
-
-    private static Map<Integer, List<Integer>> populateTaxisAndFirstTravel(
-            int[] sortedSpeeds,
-            int[] distances,
-            int numberOfTravels
-    ) {
-        Map<Integer, List<Integer>> numberOfTravelsPerSpeed = new HashMap<>();
-        int currentTravelCounter = 0;
-
-        // Populate the map and take advantage of the initiated loop to start the travels already
-        for (int speed: sortedSpeeds) {
-            if (speed == 0) {
-                numberOfTravelsPerSpeed.put(speed, new ArrayList<>(Arrays.asList(0, 0)));
-                continue;
-            }
-
-            if (checkIfThereIsANextTravel(currentTravelCounter, numberOfTravels)) {
-                int travelTime = calculateTravelTime(distances[currentTravelCounter], speed);
-                numberOfTravelsPerSpeed.put(speed, new ArrayList<>(Arrays.asList(1, travelTime)));
-                currentTravelCounter++;
-            } else {
-                numberOfTravelsPerSpeed.put(speed, new ArrayList<>(Arrays.asList(0, 0)));
-            }
-        }
-
-        return numberOfTravelsPerSpeed;
-    }
-
-
-    private static int checkWhichTaxiIsReadyToGo(Map<Integer, List<Integer>> numberOfTravelsPerSpeed) {
-        // If we get to this point then all taxis have left and there are still travels pending so, we do not need to
-        // check for taxis that have not yet departed
-        int expectedSpeed = 0;
-        int minWaitTime = Integer.MAX_VALUE;
-
-        // Check which is the taxi with the minimum waiting time
-        for (Map.Entry<Integer, List<Integer>> entry: numberOfTravelsPerSpeed.entrySet()) {
+    public static Taxi prioritizeTaxiToGo(Map<Integer, Taxi> taxiMap) {
+        Taxi taxiToGo = null;
+        for (Map.Entry<Integer, Taxi> entry: taxiMap.entrySet()) {
+            Taxi currentTaxi = entry.getValue();
             if (entry.getKey() == 0) {
                 continue;
             }
 
-            if (entry.getValue().get(1) < minWaitTime) {
-                minWaitTime = entry.getValue().get(1);
-                expectedSpeed = entry.getKey();
+            if (taxiToGo == null || currentTaxi.getTimeUntilReady() < taxiToGo.getTimeUntilReady()) {
+                taxiToGo = currentTaxi;
+            } else if (taxiToGo.getTimeUntilReady() == currentTaxi.getTimeUntilReady()) {
+                if (currentTaxi.getSpeed() > taxiToGo.getSpeed()) {
+                    taxiToGo = currentTaxi;
+                }
             }
         }
 
-        // Subtract the minimum waiting time for all taxis to simulate the time passing
-        for (Map.Entry<Integer, List<Integer>> entry: numberOfTravelsPerSpeed.entrySet()) {
+        for (Map.Entry<Integer, Taxi> entry: taxiMap.entrySet()) {
+            Taxi currentTaxi = entry.getValue();
+            if (currentTaxi == taxiToGo) {
+                continue;
+            }
+
+            float newTimeUntilReady =
+                    taxiToGo != null ? (currentTaxi.getTimeUntilReady() - taxiToGo.getTimeUntilReady()) : 0f;
+
             if (entry.getKey() == 0) {
                 continue;
             }
 
-            numberOfTravelsPerSpeed.put(
-                    entry.getKey(),
-                    Arrays.asList(
-                            entry.getValue().get(0),
-                            entry.getValue().get(1)-minWaitTime)
-            );
+            currentTaxi.setTimeUntilReady(newTimeUntilReady);
         }
 
-        return expectedSpeed;
+        return taxiToGo;
+    }
+
+
+    static class Taxi {
+        private final int speed;
+        private int trips;
+        private float timeUntilReady;
+
+        public Taxi(int speed) {
+            this.speed = speed;
+            trips = 0;
+            timeUntilReady = speed == 0 ? -1 : 0;
+        }
+
+        public int getSpeed() {
+            return speed;
+        }
+
+        public int getTrips() {
+            return trips;
+        }
+
+        public float getTimeUntilReady() {
+            return timeUntilReady;
+        }
+
+        public void setTrips(int trips) {
+            this.trips = trips;
+        }
+
+        public void setTimeUntilReady(float timeUntilReady) {
+            this.timeUntilReady = timeUntilReady;
+        }
     }
 }
