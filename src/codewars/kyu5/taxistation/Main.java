@@ -9,22 +9,25 @@ public class Main {
 
     public static void main(String[] args) {
         System.out.println(Arrays.toString(calculateTrips(
-                new int[]{ 100, 50, 80 },
-                new int[]{  }
+                new int[]{  },
+                new int[]{ 0, 0, 0 }
         )));
     }
 
     public static int[] calculateTrips(int[] distances, int[] speeds) {
-        // Check for null or empty arrays.
-        if (distances == null || distances.length == 0) {
-            return new int[] { 0 };
-        }
-
         if (speeds == null || speeds.length == 0) {
             return new int[0];
         }
 
-        // Create Map for different taxis speeds
+        int[] trips = new int[speeds.length];
+        if (distances == null || distances.length == 0) {
+            for (int i=0; i<speeds.length; i++) {
+                trips[i] = 0;
+            }
+
+            return trips;
+        }
+
         Map<Integer, Taxi> taxiMap = new HashMap<>();
         for (int i=0; i<speeds.length; i++) {
             Taxi taxi = new Taxi(speeds[i]);
@@ -32,20 +35,17 @@ public class Main {
         }
 
 
-        // Start looping through the trips
         int currentTravelCounter = 0;
         int numberOfTravels = distances.length;
 
         while (currentTravelCounter<numberOfTravels) {
             Taxi taxiToGo = prioritizeTaxiToGo(taxiMap);
-            taxiToGo.setTrips(taxiToGo.getTrips()+1);
+            taxiToGo.incrementTrips();
             float timeUntilReady = (float) distances[currentTravelCounter] / taxiToGo.getSpeed() * 2;
-            taxiToGo.setTimeUntilReady(timeUntilReady);
+            taxiToGo.updateTimeUntilReady(timeUntilReady);
             currentTravelCounter++;
         }
 
-        // Create array to return the number of trips in the same order as the speed array parameter
-        int[] trips = new int[speeds.length];
         for (int i=0; i<trips.length; i++) {
             trips[i] = taxiMap.get(i).getTrips();
         }
@@ -75,9 +75,9 @@ public class Main {
                 continue;
             }
 
-            float newTimeUntilReady = currentTaxi.getTimeUntilReady() - taxiToGo.getTimeUntilReady();
-
-            currentTaxi.setTimeUntilReady(newTimeUntilReady);
+            if (currentTaxi.getTimeUntilReady() > 0) {
+                currentTaxi.deductTimeRelativeToCurrentTaxiToGo(taxiToGo.getTimeUntilReady());
+            }
         }
 
         return taxiToGo;
@@ -92,7 +92,7 @@ public class Main {
         public Taxi(int speed) {
             this.speed = speed;
             trips = 0;
-            timeUntilReady = speed == 0 ? -1 : 0;
+            timeUntilReady = speed == 0 ? Float.MAX_VALUE : 0;
         }
 
         public int getSpeed() {
@@ -107,12 +107,18 @@ public class Main {
             return timeUntilReady;
         }
 
-        public void setTrips(int trips) {
-            this.trips = trips;
+        public void incrementTrips() {
+            if (speed != 0) {
+                trips++;
+            }
         }
 
-        public void setTimeUntilReady(float timeUntilReady) {
-            this.timeUntilReady = timeUntilReady;
+        public void deductTimeRelativeToCurrentTaxiToGo(float timeToDeduct) {
+            timeUntilReady -= timeToDeduct;
+        }
+
+        public void updateTimeUntilReady(float newTimeUntilReady) {
+            timeUntilReady = newTimeUntilReady;
         }
     }
 }
