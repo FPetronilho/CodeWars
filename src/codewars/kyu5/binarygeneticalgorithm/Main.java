@@ -5,10 +5,10 @@ import java.util.function.ToDoubleFunction;
 
 public class Main {
 
-//    public static void main(String[] args) {
-//
-//    }
-//
+    public static void main(String[] args) {
+
+    }
+
 //    private String generate(int length) {
 //        // TODO: Implement the generate method
 //    }
@@ -30,6 +30,6 @@ public class Main {
 //    }
 //
 //    public String run(ToDoubleFunction<String> fitness, int length, double p_c, double p_m, int iterations) {
-//        // TODO: Implement the run method
+//        return run(fitness, length, p_c, p_m, 100);
 //    }
 }
