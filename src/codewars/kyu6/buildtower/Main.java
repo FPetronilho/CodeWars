@@ -14,11 +14,7 @@ public class Main {
         String[] result = new String[nFloors];
         for (int i=0; i<nFloors; i++) {
             String current = "";
-            current += " ".repeat(nFloors-1-i);
-            current += "*".repeat(1+i*2);
-            current += " ".repeat(nFloors-1-i);
-
-            result[i] = current;
+            result[i] = " ".repeat(nFloors-1-i) + "*".repeat(1+i*2) + " ".repeat(nFloors-1-i);
         }
 
         return result;
