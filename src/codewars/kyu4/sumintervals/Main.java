@@ -1,14 +1,15 @@
 package codewars.kyu4.sumintervals;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 public class Main {
 
     public static void main(String[] args) {
         System.out.println(sumIntervals(new int[][] {
+                {0, 20}, {-100000000, 10}, {30, 40}
+        }));
+
+        System.out.println(sumIntervals2(new int[][] {
                 {0, 20}, {-100000000, 10}, {30, 40}
         }));
     }
@@ -39,5 +40,16 @@ public class Main {
         }
 
         return result;
+    }
+
+    public static int sumIntervals2(int[][] intervals) {
+        HashSet<Integer> numbers = new HashSet<>();
+        for (int[] interval : intervals) {
+            for (int i=interval[0]; i<interval[1]; i++) {
+                numbers.add(i);
+            }
+        }
+
+        return numbers.size();
     }
 }
