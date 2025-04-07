@@ -8,7 +8,7 @@ public class Main {
     public static void main(String[] args) {
 
         System.out.println(findMostSimilar(
-                new String[]{"javascript", "java", "ruby", "php", "python", "coffeescript"}, "heaven"
+                new String[]{"java", "javascript", "ruby", "php", "python", "coffeescript"}, "heaven"
         ));
     }
 
